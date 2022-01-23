@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 import java.time.Year
 import java.util.*
 
-val now = Calendar.getInstance()
+val now = Calendar.getInstance()!!
 var yr = if(now.get(Calendar.MONTH) < 8) {
     Year.now().value
 } else {
@@ -28,6 +28,8 @@ class MyTimeTask : TimerTask() {
     override fun run() {
 
         println(yr)
+
+
 
         yr += 1
         startRefreshTimer()

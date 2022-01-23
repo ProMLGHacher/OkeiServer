@@ -1,16 +1,43 @@
 package ru.krea.global
 
+import org.apache.poi.xssf.usermodel.XSSFRow
+import org.apache.poi.xssf.usermodel.XSSFSheet
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.io.BufferedReader
+import java.io.FileOutputStream
+import java.io.FileReader
+
+
 const val IMAGES_PATH = "http://176.28.64.201:3434/images/"
+
+const val MAX_MARK_VALUE_FOR_TEACHER = 54
 
 val MONTHS_NAMES = listOf("Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
     "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь")
 
-fun getListOfLogin(login: String) = when (login) {
-    in "semenova08" -> listOf("1.1", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3")
-    in listOf("malyshev04", "shavel09", "balysheva03") -> listOf("1.2", "4.1", "4.2", "5.1", "5.2", "5.3")
-    "nashchekina05" -> listOf("1.1", "1.2", "5.1", "5.2", "5.3")
-    "vysochin08" -> listOf("2.1", "2.2", "2.3")
-    "volzhentseva01" -> listOf("4.1", "4.2")
-    "myazina09" -> listOf("1.1", "1.2", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "4.1", "4.2", "5.1", "5.2", "5.3")
-    else -> listOf("")
+fun csvToXLSX() {
+    try {
+        val csvFileAddress = "C:\\Users\\7\\Desktop\\iuhdfuivbiuvwdnkvhsdiuvnsoifisvihvuywev.csv" //csv file address
+        val xlsxFileAddress = "C:\\Users\\7\\Desktop\\test.xlsx" //xlsx file address
+        val workBook = XSSFWorkbook()
+        val sheet: XSSFSheet = workBook.createSheet("sheet1")
+        var currentLine: String?
+        var RowNum = 0
+        val br = BufferedReader(FileReader(csvFileAddress))
+        while (br.readLine().also { currentLine = it } != null) {
+            val str = currentLine!!.split(",".toRegex()).toTypedArray()
+            RowNum++
+            val currentRow: XSSFRow = sheet.createRow(RowNum)
+            for (i in str.indices) {
+                currentRow.createCell(i).setCellValue(str[i])
+            }
+        }
+        val fileOutputStream = FileOutputStream(xlsxFileAddress)
+        workBook.write(fileOutputStream)
+        fileOutputStream.close()
+        println("Done")
+    } catch (ex: Exception) {
+        println(ex.message + "Exception in try")
+    }
 }
+

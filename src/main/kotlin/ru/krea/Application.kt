@@ -14,14 +14,12 @@ import io.ktor.routing.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.krea.database.*
-import ru.krea.database.User.login
-import ru.krea.global.*
-import ru.krea.models.RespondUser
-import ru.krea.models.UserAuthData
+import ru.krea.global.IMAGES_PATH
+import ru.krea.global.csvToXLSX
+import ru.krea.global.startRefreshTimer
+import ru.krea.models.user.RespondUser
+import ru.krea.models.user.UserAuthData
 import ru.krea.plugins.configureRouting
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 fun main(args: Array<String>): Unit =
@@ -29,6 +27,8 @@ fun main(args: Array<String>): Unit =
 
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
+
+//    csvToXLSX()
 
     startRefreshTimer()
 
@@ -42,83 +42,53 @@ fun Application.module() {
 
     Database.connect(
         "jdbc:mysql://localhost:3306/", driver = "com.mysql.cj.jdbc.Driver",
-        user = "root", password = "cf6cf6cf6")
+        user = "root", password = "cf6cf6cf6", databaseConfig =
+    DatabaseConfig.invoke{
 
+        this.sqlLogger = CompositeSqlLogger()
+        this.defaultSchema = Schema("dtbase")
+
+    })
 
 
     transaction {
-        // print sql to std-out
-        addLogger(StdOutSqlLogger)
-        SchemaUtils.setSchema(Schema("dtbase"))
 
-        SchemaUtils.create(Status)
+        SchemaUtils.create(Criterion)
         SchemaUtils.create(User)
+        SchemaUtils.create(Status)
+        SchemaUtils.create(Month)
         SchemaUtils.create(Marks)
-        SchemaUtils.create(Logs)
-        SchemaUtils.create(MarksData)
+        SchemaUtils.create(UserLastChange)
 
-//        User.insert {
-//            it[login] = "kisliy"
-//            it[password] = "kisliy_228"
-//            it[name] = "Кисленко"
-//            it[imageURL] = "юрл"
-//            it[statusId] = 3
-//        }
-
-//        MONTHS_NAMES.forEach { itMonth ->
-//            User.selectAll().forEach { itUser ->
-//                if (itUser[User.statusId] == 3) {
-//                    Marks.insert {
-//                        it[monthName] = itMonth
-//                        it[userLogin] = itUser[User.login]
-//                        it[q1] = 0
-//                        it[q2] = 0
-//                        it[q3] = 0
-//                        it[q4] = 0
-//                        it[q5] = 0
-//                        it[q6] = 0
-//                        it[q7] = 0
-//                        it[q8] = 0
-//                        it[q9] = 0
-//                        it[q10] = 0
-//                        it[q11] = 0
-//                        it[q12] = 0
-//                        it[q13] = 0
-//                    }
-//                }
-//            }
-//        }
-//        val listooo = listOf("1.1", "1.2", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "4.1", "4.2", "5.1", "5.2", "5.3")
-//        MONTHS_NAMES.forEach { itMonth ->
-//            User.selectAll().forEach { itUser ->
-//                if (itUser[User.statusId] == 3) {
-//                    listooo.forEach { listIT ->
-//                        MarksData.insert {
-//                            it[MarksData.month] = itMonth
-//                            it[MarksData.login] = itUser[User.login]
-//                            it[MarksData.markId] = listIT
-//                            it[MarksData.lastDate] = "no"
-//                            it[MarksData.lastLogin] = "no"
+        // заполнение таблицы со значениями оценок
+//        User.selectAll().forEach { userIT ->
+//            if (userIT[User.statusId] !in listOf(1, 2, 3)) {
+//                Month.selectAll().forEach { monthIT ->
+//                    Criterion.selectAll().forEach { criterionIT ->
+//                        Marks.insert { markIT ->
+//                            markIT[markId] = criterionIT[Criterion.criterionId]
+//                            markIT[monthName] = monthIT[Month.monthName]
+//                            markIT[userLogin] = userIT[User.login]
+//                            markIT[mark] = 0
 //                        }
 //                    }
 //                }
 //            }
 //        }
 
-
-        User.selectAll().reversed().forEach { println(it[login]) }
-
-//        User.selectAll().forEach {
-//            val d = it[User.statusId]
-//            Status.select { Status.statusId eq d }.forEach {
-//                println(it[Status.status])
+//        User.selectAll().forEach { userIT ->
+//            if (userIT[User.statusId] == 4) {
+//                Month.selectAll().forEach { monthIT ->
+//                    UserLastChange.insert { ulsIT ->
+//                        ulsIT[userLogin] = userIT[User.login]
+//                        ulsIT[lastChange] = "нет изменений"
+//                        ulsIT[monthName] = monthIT[Month.monthName]
+//                    }
+//                }
 //            }
 //        }
 
-
-
     }
-
 
     val secret = environment.config.property("ktor.jwt.secret").getString()
     val issuer = environment.config.property("ktor.jwt.issuer").getString()
@@ -146,26 +116,21 @@ fun Application.module() {
     }
 
     routing {
+
         post("/login") {
+
             val user = call.receive<UserAuthData>()
 
             var res = false
             var respondUser = RespondUser()
 
+
             transaction {
-
-
-                addLogger(StdOutSqlLogger)
-                SchemaUtils.setSchema(Schema("dtbase"))
-
-
-                User.selectAll().forEach {
-                    if (it[login] == user.login) {
-                        println("1")
-                        if (it[User.password] == user.password) {
-                            println("2")
-                            res = true
-                        }
+                User.select { User.login eq user.login }.forEach {
+                    if (it[User.password] == user.password) {
+                        res = true
+                        respondUser.status = it[User.statusId].toString()
+                        respondUser.login = it[User.login]
                     }
                 }
             }
@@ -174,38 +139,19 @@ fun Application.module() {
                 val token = JWT.create()
                     .withAudience(audience)
                     .withIssuer(issuer)
+//                    .withExpiresAt(Date(System.currentTimeMillis() + 60000))
                     .withClaim("username", user.login)
                     .sign(Algorithm.HMAC256(secret))
 
                 respondUser.token = "Bearer $token"
 
                 transaction {
-
-                    addLogger(StdOutSqlLogger)
-                    SchemaUtils.setSchema(Schema("dtbase"))
-
-                    User.selectAll().forEach {
-                        if (it[login] == user.login) {
-                            respondUser.login = it[login]
-                            respondUser.name = it[User.name]
-                            respondUser.imageURL = IMAGES_PATH + it[login] + ".jpg"
-                            respondUser.status = it[User.statusId].toString()
-                        }
-                    }
-
-                    Status.select { Status.statusId eq respondUser.status.toInt() }.forEach {
+                    Status.select { Status.statusId eq respondUser.status }.forEach {
                         respondUser.status = it[Status.status]
                     }
-
                 }
-
-                println(respondUser.toString())
-
                 call.respond(respondUser)
             } else {
-
-                println("LOH")
-
                 call.respond(HttpStatusCode.Unauthorized)
             }
         }
