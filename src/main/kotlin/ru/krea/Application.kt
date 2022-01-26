@@ -60,6 +60,7 @@ fun Application.module() {
         SchemaUtils.create(Month)
         SchemaUtils.create(Marks)
         SchemaUtils.create(UserLastChange)
+        SchemaUtils.create(LogsTable)
 
         // заполнение таблицы со значениями оценок
 //        User.selectAll().forEach { userIT ->

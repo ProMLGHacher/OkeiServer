@@ -7,5 +7,5 @@ data class VoteCriterion (
     val id: String,
     var nameAppraiser: String,
     var lastChange: String,
-    var points: Int,
+    var points: Int
 )

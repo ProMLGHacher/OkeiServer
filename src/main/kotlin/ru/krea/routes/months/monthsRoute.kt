@@ -1,17 +1,17 @@
 package ru.krea.routes.months
 
 import io.ktor.application.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.krea.database.Marks
-import ru.krea.database.Month
-import ru.krea.database.User
+import ru.krea.database.*
 import ru.krea.global.MAX_MARK_VALUE_FOR_TEACHER
 import ru.krea.global.MONTHS_NAMES
 import ru.krea.models.criterion.VoteCriterion
 import ru.krea.models.month.MonthData
+import ru.krea.models.user.UserAuthData
 import java.util.*
 import kotlin.math.floor
 
@@ -120,17 +120,26 @@ fun Route.monthsRoute() {
             val monthName = call.parameters["monthName"].toString()
             val loginTeacher = call.parameters["loginTeacher"].toString()
 
-            val respondList = mutableListOf<VoteCriterion>()
+            val voteCriterion = call.receive<VoteCriterion>()
 
             transaction {
-                Marks.select{ Marks.monthName.eq(monthName) and Marks.userLogin.eq(loginTeacher)}.forEach {
-                    val voteCriterion = VoteCriterion(
-                        it[Marks.markId],
-                        it[Marks.lastAppraiser],
-                        it[Marks.lastChange],
-                        it[Marks.mark]
-                    )
-                    respondList += voteCriterion
+                Marks.update ({ Marks.monthName.eq(monthName) and Marks.userLogin.eq(loginTeacher) and Marks.markId.eq(voteCriterion.id)}) {
+                    it[mark] = voteCriterion.points
+                    it[lastChange] = voteCriterion.lastChange
+                    it[lastAppraiser] = voteCriterion.nameAppraiser
+                }
+                Month.update({Month.monthName.eq(monthName)}) {
+                    it[lastChange] = voteCriterion.lastChange
+                }
+                UserLastChange.update({UserLastChange.monthName.eq(monthName) and UserLastChange.userLogin.eq(loginTeacher)}) {
+                    it[lastChange] = voteCriterion.lastChange
+                }
+                LogsTable.insert {
+                    it[appraiserLogin] = voteCriterion.nameAppraiser
+                    it[teacherLogin] = loginTeacher
+                    it[mark] = voteCriterion.points
+                    it[markId] = voteCriterion.id
+                    it[appriseDate] = voteCriterion.lastChange
                 }
             }
         }
