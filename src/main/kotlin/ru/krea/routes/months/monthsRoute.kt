@@ -113,6 +113,27 @@ fun Route.monthsRoute() {
                     respondList += voteCriterion
                 }
             }
+
+            call.respond(respondList)
+        }
+
+        put("/{monthName}/{loginTeacher}") {
+            val monthName = call.parameters["monthName"].toString()
+            val loginTeacher = call.parameters["loginTeacher"].toString()
+
+            val respondList = mutableListOf<VoteCriterion>()
+
+            transaction {
+                Marks.select{ Marks.monthName.eq(monthName) and Marks.userLogin.eq(loginTeacher)}.forEach {
+                    val voteCriterion = VoteCriterion(
+                        it[Marks.markId],
+                        it[Marks.lastAppraiser],
+                        it[Marks.lastChange],
+                        it[Marks.mark]
+                    )
+                    respondList += voteCriterion
+                }
+            }
         }
     }
 }
