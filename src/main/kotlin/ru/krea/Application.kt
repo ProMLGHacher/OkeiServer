@@ -71,17 +71,15 @@ fun Application.module() {
 //                            markIT[monthName] = monthIT[Month.monthName]
 //                            markIT[userLogin] = userIT[User.login]
 //                            markIT[mark] = 0
+//                            markIT[lastAppraiser] = "пока никто не оценил"
+//                            markIT[lastChange] = "нет изменений"
 //                        }
 //                    }
 //                }
 //            }
 //        }
-
-//        Marks.update { markIT ->
-//            markIT[lastAppraiser] = "пока никто не оценил"
-//            markIT[lastChange] = "нет изменений"
-//        }
-
+//
+//
 //        User.selectAll().forEach { userIT ->
 //            if (userIT[User.statusId] == 4) {
 //                Month.selectAll().forEach { monthIT ->

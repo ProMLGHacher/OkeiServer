@@ -113,7 +113,6 @@ fun Route.monthsRoute() {
                     respondList += voteCriterion
                 }
             }
-
             call.respond(respondList)
         }
 
