@@ -10,6 +10,7 @@ import ru.krea.database.Month
 import ru.krea.database.User
 import ru.krea.global.MAX_MARK_VALUE_FOR_TEACHER
 import ru.krea.global.MONTHS_NAMES
+import ru.krea.models.criterion.VoteCriterion
 import ru.krea.models.month.MonthData
 import java.util.*
 import kotlin.math.floor
@@ -18,14 +19,14 @@ fun Route.monthsRoute() {
     route("months") {
         get {
 
-            var previousMonth = MonthData()
-            var currentMonth = MonthData()
+            val previousMonth = MonthData()
+            val currentMonth = MonthData()
 
             var previousMonthTeacherCount = 0
             var currentMonthTeacherCount = 0
 
             val now = Calendar.getInstance()!!
-            var monthId = now.get(Calendar.MONTH)
+            val monthId = now.get(Calendar.MONTH)
 
             transaction {
                 Month.select { Month.monthName eq MONTHS_NAMES[monthId] }.forEach {
@@ -38,7 +39,6 @@ fun Route.monthsRoute() {
                     previousMonth.underway = false
                     previousMonth.lastChange = it[Month.lastChange]
                 }
-
 
                 Marks.select { Marks.monthName eq currentMonth.name }.forEach {
                     currentMonth.progress += it[Marks.mark]
@@ -94,6 +94,25 @@ fun Route.monthsRoute() {
                 }
             }
             call.respond(listOf(currentMonth, previousMonth))
+        }
+
+        get("/{monthName}/{loginTeacher}") {
+            val monthName = call.parameters["monthName"].toString()
+            val loginTeacher = call.parameters["loginTeacher"].toString()
+
+            val respondList = mutableListOf<VoteCriterion>()
+
+            transaction {
+                Marks.select{ Marks.monthName.eq(monthName) and Marks.userLogin.eq(loginTeacher)}.forEach {
+                    val voteCriterion = VoteCriterion(
+                        it[Marks.markId],
+                        it[Marks.lastAppraiser],
+                        it[Marks.lastChange],
+                        it[Marks.mark]
+                    )
+                    respondList += voteCriterion
+                }
+            }
         }
     }
 }

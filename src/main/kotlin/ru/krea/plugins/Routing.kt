@@ -9,14 +9,11 @@ import ru.krea.routes.months.monthsRoute
 import ru.krea.routes.users.usersRoute
 
 fun Application.configureRouting() {
-
     routing {
-
         authenticate("auth-jwt") {
             monthsRoute()
             usersRoute()
         }
-
     }
 
     // Starting point for a Ktor app:

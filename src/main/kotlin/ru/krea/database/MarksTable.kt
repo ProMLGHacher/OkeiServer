@@ -8,6 +8,8 @@ object Marks: Table() {
     val monthName = varchar("monthName", 50)
     val userLogin = varchar("userLogin", 50)
     val mark = integer("markValue")
+    val lastChange = varchar("lastchange", 50)
+    val lastAppraiser = varchar("lastappraiser", 50)
 
     override val primaryKey = PrimaryKey(id)
 }

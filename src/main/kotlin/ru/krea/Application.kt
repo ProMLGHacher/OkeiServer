@@ -30,7 +30,7 @@ fun Application.module() {
 
 //    csvToXLSX()
 
-    startRefreshTimer()
+
 
     install(ContentNegotiation) {
         gson()
@@ -50,6 +50,7 @@ fun Application.module() {
 
     })
 
+    startRefreshTimer()
 
     transaction {
 
@@ -76,6 +77,11 @@ fun Application.module() {
 //            }
 //        }
 
+//        Marks.update { markIT ->
+//            markIT[lastAppraiser] = "пока никто не оценил"
+//            markIT[lastChange] = "нет изменений"
+//        }
+
 //        User.selectAll().forEach { userIT ->
 //            if (userIT[User.statusId] == 4) {
 //                Month.selectAll().forEach { monthIT ->
@@ -87,7 +93,6 @@ fun Application.module() {
 //                }
 //            }
 //        }
-
     }
 
     val secret = environment.config.property("ktor.jwt.secret").getString()
@@ -111,19 +116,15 @@ fun Application.module() {
                     null
                 }
             }
-
         }
     }
 
     routing {
-
         post("/login") {
-
             val user = call.receive<UserAuthData>()
 
             var res = false
             var respondUser = RespondUser()
-
 
             transaction {
                 User.select { User.login eq user.login }.forEach {
