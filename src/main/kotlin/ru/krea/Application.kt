@@ -131,6 +131,7 @@ fun Application.module() {
                         res = true
                         respondUser.status = it[User.statusId].toString()
                         respondUser.login = it[User.login]
+                        respondUser.name = it[User.name]
                     }
                 }
             }
