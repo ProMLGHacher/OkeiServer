@@ -1,6 +1,7 @@
 package ru.krea.routes.months
 
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -142,6 +143,7 @@ fun Route.monthsRoute() {
                     it[appriseDate] = voteCriterion.lastChange
                 }
             }
+            call.respond(HttpStatusCode.OK)
         }
     }
 }
