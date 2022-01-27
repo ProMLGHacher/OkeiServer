@@ -43,4 +43,6 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:5.0.0")
     implementation("org.apache.xmlbeans:xmlbeans:2.3.0")
 
+    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.2.0")
+
 }
