@@ -13,6 +13,8 @@ import ru.krea.global.MONTHS_NAMES
 import ru.krea.models.criterion.VoteCriterion
 import ru.krea.models.month.MonthData
 import ru.krea.models.user.UserAuthData
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.floor
 
@@ -122,6 +124,14 @@ fun Route.monthsRoute() {
             val loginTeacher = call.parameters["loginTeacher"].toString()
 
             val voteCriterion = call.receive<VoteCriterion>()
+
+            if (voteCriterion.lastChange == "") {
+                val current = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val formatted = current.format(formatter)
+
+                voteCriterion.lastChange = formatted
+            }
 
             transaction {
                 Marks.update ({ Marks.monthName.eq(monthName) and Marks.userLogin.eq(loginTeacher) and Marks.markId.eq(voteCriterion.id)}) {
