@@ -68,7 +68,7 @@ fun Route.monthsRoute() {
                                     currentUserMarkSumm += it[Marks.mark]
                                 }
                                 if (currentUserMarkSumm > previousUserMarkSumm) {
-                                    currentMonth.topTeachers[i] = userIT[User.login]
+                                    currentMonth.topTeachers[i] = userIT[User.name]
                                 }
                                 previousUserMarkSumm = currentUserMarkSumm
                             }
@@ -86,7 +86,7 @@ fun Route.monthsRoute() {
                                     currentUserMarkSumm += it[Marks.mark]
                                 }
                                 if (currentUserMarkSumm > previousUserMarkSumm) {
-                                    previousMonth.topTeachers[i] = userIT[User.login]
+                                    previousMonth.topTeachers[i] = userIT[User.name]
                                 }
                                 previousUserMarkSumm = currentUserMarkSumm
                             }
