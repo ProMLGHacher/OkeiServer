@@ -25,13 +25,17 @@ fun Route.monthsRoute() {
             val previousMonth = MonthData()
             val currentMonth = MonthData()
 
-            var previousMonthTeacherCount = 0
-            var currentMonthTeacherCount = 0
+            var teacherCount = 0
 
             val now = Calendar.getInstance()!!
             val monthId = now.get(Calendar.MONTH)
 
             transaction {
+
+                User.select { User.statusId eq 4 }.forEach { _ ->
+                    teacherCount += 1
+                }
+
                 Month.select { Month.monthName eq MONTHS_NAMES[monthId] }.forEach {
                     currentMonth.name = it[Month.monthName]
                     currentMonth.underway = true
@@ -42,22 +46,19 @@ fun Route.monthsRoute() {
                     previousMonth.underway = false
                     previousMonth.lastChange = it[Month.lastChange]
                 }
-
                 Marks.select { Marks.monthName eq currentMonth.name }.forEach {
                     currentMonth.progress += it[Marks.mark]
-                    currentMonthTeacherCount ++
                 }
                 println(currentMonth.progress)
-                currentMonth.progress /= currentMonthTeacherCount * MAX_MARK_VALUE_FOR_TEACHER
+                currentMonth.progress /= teacherCount * MAX_MARK_VALUE_FOR_TEACHER
                 currentMonth.progress *= 100
                 currentMonth.progress = floor(currentMonth.progress.toDouble()).toFloat()
                 println(currentMonth.progress)
 
                 Marks.select { Marks.monthName eq previousMonth.name }.forEach {
                     previousMonth.progress += it[Marks.mark]
-                    previousMonthTeacherCount ++
                 }
-                previousMonth.progress /= previousMonthTeacherCount * MAX_MARK_VALUE_FOR_TEACHER
+                previousMonth.progress /= teacherCount * MAX_MARK_VALUE_FOR_TEACHER
                 previousMonth.progress *= 100
                 previousMonth.progress = floor(previousMonth.progress.toDouble()).toFloat()
 
