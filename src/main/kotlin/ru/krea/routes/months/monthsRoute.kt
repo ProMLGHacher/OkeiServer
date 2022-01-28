@@ -47,9 +47,11 @@ fun Route.monthsRoute() {
                     currentMonth.progress += it[Marks.mark]
                     currentMonthTeacherCount ++
                 }
+                println(currentMonth.progress)
                 currentMonth.progress /= currentMonthTeacherCount * MAX_MARK_VALUE_FOR_TEACHER
                 currentMonth.progress *= 100
                 currentMonth.progress = floor(currentMonth.progress.toDouble()).toFloat()
+                println(currentMonth.progress)
 
                 Marks.select { Marks.monthName eq previousMonth.name }.forEach {
                     previousMonth.progress += it[Marks.mark]
