@@ -123,40 +123,47 @@ fun Route.monthsRoute() {
         }
 
         put("/{monthName}/{loginTeacher}") {
-            val monthName = call.parameters["monthName"].toString()
-            val loginTeacher = call.parameters["loginTeacher"].toString()
+            val now = Calendar.getInstance()!!
+            val day = now.get(Calendar.DAY_OF_MONTH)
 
-            val voteCriterion = call.receive<VoteCriterion>()
+            if (day > 25) {
+                call.respond(HttpStatusCode.MethodNotAllowed)
+            } else {
+                val monthName = call.parameters["monthName"].toString()
+                val loginTeacher = call.parameters["loginTeacher"].toString()
 
-            if (voteCriterion.lastChange == "") {
-                val current = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                val formatted = current.format(formatter)
+                val voteCriterion = call.receive<VoteCriterion>()
 
-                voteCriterion.lastChange = formatted
+                if (voteCriterion.lastChange == "") {
+                    val current = LocalDateTime.now()
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val formatted = current.format(formatter)
+
+                    voteCriterion.lastChange = formatted
+                }
+
+                transaction {
+                    Marks.update ({ Marks.monthName.eq(monthName) and Marks.userLogin.eq(loginTeacher) and Marks.markId.eq(voteCriterion.id)}) {
+                        it[mark] = voteCriterion.points
+                        it[lastChange] = voteCriterion.lastChange
+                        it[lastAppraiser] = voteCriterion.nameAppraiser
+                    }
+                    Month.update({Month.monthName.eq(monthName)}) {
+                        it[lastChange] = voteCriterion.lastChange
+                    }
+                    UserLastChange.update({UserLastChange.monthName.eq(monthName) and UserLastChange.userLogin.eq(loginTeacher)}) {
+                        it[lastChange] = voteCriterion.lastChange
+                    }
+                    LogsTable.insert {
+                        it[appraiserLogin] = voteCriterion.nameAppraiser
+                        it[teacherLogin] = loginTeacher
+                        it[mark] = voteCriterion.points
+                        it[markId] = voteCriterion.id
+                        it[appriseDate] = voteCriterion.lastChange
+                    }
+                }
+                call.respond(HttpStatusCode.Created)
             }
-
-            transaction {
-                Marks.update ({ Marks.monthName.eq(monthName) and Marks.userLogin.eq(loginTeacher) and Marks.markId.eq(voteCriterion.id)}) {
-                    it[mark] = voteCriterion.points
-                    it[lastChange] = voteCriterion.lastChange
-                    it[lastAppraiser] = voteCriterion.nameAppraiser
-                }
-                Month.update({Month.monthName.eq(monthName)}) {
-                    it[lastChange] = voteCriterion.lastChange
-                }
-                UserLastChange.update({UserLastChange.monthName.eq(monthName) and UserLastChange.userLogin.eq(loginTeacher)}) {
-                    it[lastChange] = voteCriterion.lastChange
-                }
-                LogsTable.insert {
-                    it[appraiserLogin] = voteCriterion.nameAppraiser
-                    it[teacherLogin] = loginTeacher
-                    it[mark] = voteCriterion.points
-                    it[markId] = voteCriterion.id
-                    it[appriseDate] = voteCriterion.lastChange
-                }
-            }
-            call.respond(HttpStatusCode.OK)
         }
     }
 }
