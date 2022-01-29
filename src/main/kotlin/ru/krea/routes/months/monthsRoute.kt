@@ -127,7 +127,7 @@ fun Route.monthsRoute() {
             val day = now.get(Calendar.DAY_OF_MONTH)
 
             if (day > 25) {
-                call.respond(HttpStatusCode.MethodNotAllowed)
+                call.respond(HttpStatusCode.NotImplemented)
             } else {
                 val monthName = call.parameters["monthName"].toString()
                 val loginTeacher = call.parameters["loginTeacher"].toString()
