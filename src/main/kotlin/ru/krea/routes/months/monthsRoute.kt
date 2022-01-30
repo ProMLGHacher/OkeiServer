@@ -64,11 +64,13 @@ fun Route.monthsRoute() {
 
 
                 for (i in 0..4) {
-                    var currentUserMarkSumm = 0
                     var previousUserMarkSumm = 0
                     User.selectAll().forEach { userIT ->
                         if (userIT[User.statusId] == 4) {
                             if (userIT[User.name] !in currentMonth.topTeachers) {
+
+                                var currentUserMarkSumm = 0
+
                                 Marks.select { Marks.monthName.eq(currentMonth.name) and Marks.userLogin.eq(userIT[User.login]) }.forEach {
                                     currentUserMarkSumm += it[Marks.mark]
                                 }
@@ -89,10 +91,12 @@ fun Route.monthsRoute() {
                 }
 
                 for (i in 0..4) {
-                    var currentUserMarkSumm = 0
                     var previousUserMarkSumm = 0
                     User.selectAll().forEach { userIT ->
                         if (userIT[User.statusId] == 4) {
+
+                            var currentUserMarkSumm = 0
+
                             if (userIT[User.name] !in previousMonth.topTeachers) {
                                 Marks.select { Marks.monthName.eq(previousMonth.name) and Marks.userLogin.eq(userIT[User.login]) }.forEach {
                                     currentUserMarkSumm += it[Marks.mark]
