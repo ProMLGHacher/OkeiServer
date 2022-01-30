@@ -5,6 +5,7 @@ import io.ktor.auth.*
 import io.ktor.http.content.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import ru.krea.routes.admin_panel.reportRoute
 import ru.krea.routes.months.monthsRoute
 import ru.krea.routes.users.usersRoute
 
@@ -13,13 +14,13 @@ fun Application.configureRouting() {
         authenticate("auth-jwt") {
             monthsRoute()
             usersRoute()
+            reportRoute()
         }
     }
 
     // Starting point for a Ktor app:
     routing {
         get("/") {
-            
             call.respondText("Hello World!")
         }
     }
