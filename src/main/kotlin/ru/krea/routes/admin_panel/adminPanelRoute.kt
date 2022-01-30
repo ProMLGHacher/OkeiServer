@@ -5,6 +5,7 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import ru.krea.models.Report
+import ru.krea.models.ValuesCalculatingMonth
 
 fun Route.reportRoute() {
     route("report") {
@@ -14,7 +15,7 @@ fun Route.reportRoute() {
 
             if (monthName == "Январь") {
                 call.response.status(HttpStatusCode(555, "NeedCreateResource"))
-                call.respond("3214")
+                call.respond(ValuesCalculatingMonth())
             } else {
                 call.respond(Report())
             }
