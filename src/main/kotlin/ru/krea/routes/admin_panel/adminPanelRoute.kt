@@ -15,7 +15,7 @@ fun Route.reportRoute() {
             if (monthName == "Декабрь") {
                 call.respond(Report())
             } else {
-                call.respond(HttpStatusCode.NotFound)
+                call.respond(HttpStatusCode.NoContent)
             }
         }
     }
