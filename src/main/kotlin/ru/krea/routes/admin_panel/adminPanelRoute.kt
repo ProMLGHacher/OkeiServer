@@ -13,7 +13,7 @@ fun Route.reportRoute() {
             val monthName = call.parameters["month"].toString()
 
             if (monthName == "Январь") {
-                call.response.status(HttpStatusCode.NoContent)
+                call.response.status(HttpStatusCode(555, "NeedCreateResource"))
                 call.respond("3214")
             } else {
                 call.respond(Report())

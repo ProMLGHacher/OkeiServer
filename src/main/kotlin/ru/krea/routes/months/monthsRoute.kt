@@ -77,13 +77,6 @@ fun Route.monthsRoute() {
                                 if (currentUserMarkSumm > previousUserMarkSumm) {
                                     currentMonth.topTeachers[i] = userIT[User.name]
                                 }
-
-                                println(currentUserMarkSumm)
-                                println(previousUserMarkSumm)
-                                println(currentMonth.topTeachers)
-                                println(userIT[User.name])
-
-
                                 previousUserMarkSumm = currentUserMarkSumm
                             }
                         }
