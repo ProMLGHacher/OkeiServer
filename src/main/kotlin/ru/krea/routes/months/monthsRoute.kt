@@ -76,16 +76,8 @@ fun Route.monthsRoute() {
                                 }
                                 if (currentUserMarkSumm > previousUserMarkSumm) {
                                     currentMonth.topTeachers[i] = userIT[User.name]
+                                    previousUserMarkSumm = currentUserMarkSumm
                                 }
-
-                                println(currentUserMarkSumm)
-                                println(previousUserMarkSumm)
-                                println(currentMonth.topTeachers)
-                                println(userIT[User.name])
-                                println()
-
-
-                                previousUserMarkSumm = currentUserMarkSumm
                             }
                         }
                     }
@@ -104,8 +96,8 @@ fun Route.monthsRoute() {
                                 }
                                 if (currentUserMarkSumm > previousUserMarkSumm) {
                                     previousMonth.topTeachers[i] = userIT[User.name]
+                                    previousUserMarkSumm = currentUserMarkSumm
                                 }
-                                previousUserMarkSumm = currentUserMarkSumm
                             }
                         }
                     }
