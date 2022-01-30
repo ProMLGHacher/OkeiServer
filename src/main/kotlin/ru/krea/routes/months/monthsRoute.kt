@@ -82,6 +82,7 @@ fun Route.monthsRoute() {
                                 println(previousUserMarkSumm)
                                 println(currentMonth.topTeachers)
                                 println(userIT[User.name])
+                                println()
 
 
                                 previousUserMarkSumm = currentUserMarkSumm
