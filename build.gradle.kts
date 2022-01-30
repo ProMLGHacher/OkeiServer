@@ -16,6 +16,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
@@ -44,5 +45,7 @@ dependencies {
     implementation("org.apache.xmlbeans:xmlbeans:2.3.0")
 
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.2.0")
+
+    implementation("com.github.EvanRupert:ExcelKt:v0.1.2")
 
 }

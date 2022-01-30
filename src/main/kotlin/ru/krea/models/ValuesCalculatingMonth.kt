@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ValuesCalculatingMonth(
-    val totalAmountPoints: String = "1290",
-    val countTeacher: Int = 48
+    val totalAmountPoints: String,
+    val countTeacher: Int
 )

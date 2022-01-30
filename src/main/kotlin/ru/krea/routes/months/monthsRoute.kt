@@ -135,6 +135,7 @@ fun Route.monthsRoute() {
             } else {
                 val monthName = call.parameters["monthName"].toString()
                 val loginTeacher = call.parameters["loginTeacher"].toString()
+                var teacherName = ""
 
                 val voteCriterion = call.receive<VoteCriterion>()
 
@@ -147,6 +148,9 @@ fun Route.monthsRoute() {
                 }
 
                 transaction {
+                    User.select { User.login.eq(loginTeacher) }.forEach {
+                        teacherName = it[User.name]
+                    }
                     Marks.update ({ Marks.monthName.eq(monthName) and Marks.userLogin.eq(loginTeacher) and Marks.markId.eq(voteCriterion.id)}) {
                         it[mark] = voteCriterion.points
                         it[lastChange] = voteCriterion.lastChange
@@ -160,7 +164,7 @@ fun Route.monthsRoute() {
                     }
                     LogsTable.insert {
                         it[appraiserLogin] = voteCriterion.nameAppraiser
-                        it[teacherLogin] = loginTeacher
+                        it[teacherLogin] = teacherName
                         it[mark] = voteCriterion.points
                         it[markId] = voteCriterion.id
                         it[appriseDate] = voteCriterion.lastChange
