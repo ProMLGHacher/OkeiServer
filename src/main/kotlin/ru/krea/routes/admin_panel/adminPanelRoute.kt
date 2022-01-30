@@ -12,10 +12,10 @@ fun Route.reportRoute() {
 
             val monthName = call.parameters["month"].toString()
 
-            if (monthName == "Декабрь") {
-                call.respond(Report())
+            if (monthName == "Январь") {
+                call.respondText("1223", status = HttpStatusCode.NoContent)
             } else {
-                call.respond(HttpStatusCode.NoContent)
+                call.respond(Report())
             }
         }
     }
