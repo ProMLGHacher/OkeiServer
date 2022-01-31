@@ -170,7 +170,7 @@ fun Route.reportRoute() {
                             markSumm += it[Marks.mark]
                         }
                         listPremiumTeacher += PremiumTeacher(userIT[User.name], markSumm.toString(),
-                            (markSumm * report.pointValue.toInt()).toString()
+                            (markSumm * report.pointValue.toInt() + report.fixedPremium.toInt()).toString()
                         )
                     }
                 }
