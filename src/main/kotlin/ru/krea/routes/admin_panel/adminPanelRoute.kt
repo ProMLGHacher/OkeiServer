@@ -18,6 +18,7 @@ import ru.krea.database.Marks
 import ru.krea.database.ReportMonthData
 import ru.krea.database.ReportTeachers
 import ru.krea.database.User
+import ru.krea.global.MONTHS_NAMES
 import ru.krea.global.PREMIUM_REPORTS_LINK
 import ru.krea.global.PREMIUM_REPORTS_PATH
 import ru.krea.models.CreateReport
@@ -37,6 +38,7 @@ fun Route.reportRoute() {
 
             val now = Calendar.getInstance()!!
             var year = now.get(Calendar.YEAR)
+            var currentMonth = MONTHS_NAMES[now.get(Calendar.MONTH)]
 
             val monthName = call.parameters["month"].toString()
 
@@ -45,7 +47,7 @@ fun Route.reportRoute() {
             }
 
             // если месяц текущий
-            if (monthName == monthName) {
+            if (monthName == currentMonth) {
 
                 var statId: Int = 0
 
@@ -57,7 +59,7 @@ fun Route.reportRoute() {
                 }
 
                 // если дирик
-                if (statId == 1) {
+                if (statId != 2) {
                     call.response.status(HttpStatusCode.NotFound)
                     call.respond("")
                 } else {
