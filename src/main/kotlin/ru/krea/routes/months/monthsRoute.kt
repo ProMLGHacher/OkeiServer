@@ -107,8 +107,12 @@ fun Route.monthsRoute() {
         }
 
         get("/{monthName}/{loginTeacher}") {
-            val monthName = call.parameters["monthName"].toString()
+            var monthName = call.parameters["monthName"].toString()
             val loginTeacher = call.parameters["loginTeacher"].toString()
+
+            if (monthName !in MONTHS_NAMES) {
+                monthName = MONTHS_NAMES[monthName.toInt()]
+            }
 
             val respondList = mutableListOf<VoteCriterion>()
 
