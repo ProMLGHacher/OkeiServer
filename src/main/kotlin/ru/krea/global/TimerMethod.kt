@@ -1,5 +1,9 @@
 package ru.krea.global
 
+import excelkt.workbook
+import excelkt.write
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -65,6 +69,23 @@ class YearTimer : TimerTask() {
             UserLastChange.update {
                 it[lastChange] = "нет изменений"
             }
+            ReportMonthData.deleteAll()
+            Month.selectAll().forEach { monthIT ->
+                ReportMonthData.insert { repIT ->
+                    repIT[monthName] = monthIT[Month.monthName]
+                }
+            }
+            ReportTeachers.deleteAll()
+            Month.selectAll().forEach { monthIT ->
+                User.selectAll().forEach { userIT ->
+                    if (userIT[User.statusId] == 4) {
+                        ReportTeachers.insert {
+                            it[monthName] = monthIT[Month.monthName]
+                            it[userName] = userIT[User.name]
+                        }
+                    }
+                }
+            }
         }
 
         startYrTimer()
@@ -74,7 +95,37 @@ class YearTimer : TimerTask() {
 class MonthTimer : TimerTask() {
     override fun run() {
 
+        val now = Calendar.getInstance()!!
+        val year = now.get(Calendar.YEAR)
+        val month = MONTHS_NAMES[now.get(Calendar.MONTH)]
+
         //сохранение отчётности
+        workbook {
+            sheet {
+                row {
+                    cell("Номер оценки")
+                    cell("Дата оценивания")
+                    cell("Учитель")
+                    cell("Оценивающий")
+                    cell("Оценка")
+                }
+                transaction {
+                    LogsTable.selectAll().forEach {
+                        row {
+                            cell(it[LogsTable.markId])
+                            cell(it[LogsTable.appriseDate])
+                            cell(it[LogsTable.teacherLogin])
+                            cell(it[LogsTable.appraiserLogin])
+                            cell(it[LogsTable.mark])
+                        }
+                    }
+                }
+            }
+        }.write("$PREMIUM_LOGS_PATH$year $month.xlsx")
+
+        transaction {
+            LogsTable.deleteAll()
+        }
 
         startMonthTimer()
     }

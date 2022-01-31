@@ -14,8 +14,6 @@ import io.ktor.routing.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.krea.database.*
-import ru.krea.global.IMAGES_PATH
-import ru.krea.global.csvToXLSX
 import ru.krea.global.startRefreshTimer
 import ru.krea.models.user.RespondUser
 import ru.krea.models.user.UserAuthData
@@ -59,6 +57,25 @@ fun Application.module() {
         SchemaUtils.create(Marks)
         SchemaUtils.create(UserLastChange)
         SchemaUtils.create(LogsTable)
+        SchemaUtils.create(ReportMonthData)
+        SchemaUtils.create(ReportTeachers)
+
+        Month.selectAll().forEach { monthIT ->
+            ReportMonthData.insert { repIT ->
+                repIT[monthName] = monthIT[Month.monthName]
+            }
+        }
+
+        Month.selectAll().forEach { monthIT ->
+            User.selectAll().forEach { userIT ->
+                if (userIT[User.statusId] == 4) {
+                    ReportTeachers.insert {
+                        it[monthName] = monthIT[Month.monthName]
+                        it[userName] = userIT[User.name]
+                    }
+                }
+            }
+        }
 
         // заполнение таблицы со значениями оценок
 //        User.selectAll().forEach { userIT ->
