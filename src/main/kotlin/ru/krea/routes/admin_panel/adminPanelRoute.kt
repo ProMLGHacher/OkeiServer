@@ -93,19 +93,19 @@ fun Route.reportRoute() {
                     } else {
                         call.response.status(HttpStatusCode(555, "NeedCreateResource"))
 
-                        var totalAmountPoints: String = ""
+                        var totalAmountPoints: Int = 0
                         var countTeacher: Int = 0
 
                         transaction {
-                            ReportMonthData.select { ReportMonthData.monthName.eq(monthName) }.forEach {
-                                totalAmountPoints = it[ReportMonthData.totalAmountPoints]
+                            Marks.select { Marks.monthName.eq(monthName) }.forEach {
+                                totalAmountPoints += it[Marks.mark]
                             }
 
                             User.select { User.statusId.eq(4) }.forEach {
                                 countTeacher += 1
                             }
                         }
-                        call.respond(ValuesCalculatingMonth(totalAmountPoints, countTeacher))
+                        call.respond(ValuesCalculatingMonth(totalAmountPoints.toString(), countTeacher))
                     }
                 }
             }
