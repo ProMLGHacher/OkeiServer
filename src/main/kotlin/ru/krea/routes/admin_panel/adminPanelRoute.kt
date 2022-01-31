@@ -36,9 +36,13 @@ fun Route.reportRoute() {
             var username = ""
 
             val now = Calendar.getInstance()!!
-            val year = now.get(Calendar.YEAR)
+            var year = now.get(Calendar.YEAR)
 
             val monthName = call.parameters["month"].toString()
+
+            if (monthName in listOf("Сентябрь", "Октябрь", "Ноябрь", "Декабрь")) {
+                year -= 1
+            }
 
             // если месяц текущий
             if (monthName == monthName) {
