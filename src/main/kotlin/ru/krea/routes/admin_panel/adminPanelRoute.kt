@@ -35,7 +35,14 @@ fun Route.reportRoute() {
             val userlogin = principal!!.payload.getClaim("username").asString()
             var username = ""
 
+            val now = Calendar.getInstance()!!
+            var year = now.get(Calendar.YEAR)
+
             val monthName = call.parameters["month"].toString()
+
+            if (monthName in listOf("Сентябрь", "Октябрь", "Ноябрь", "Декабрь")) {
+                year -= 1
+            }
 
             // если месяц текущий
             if (monthName == monthName) {
@@ -56,7 +63,7 @@ fun Route.reportRoute() {
                 } else {
 
                     //если отчёт есть
-                    if (File("$PREMIUM_REPORTS_PATH$monthName.xlsx").exists()) {
+                    if (File("$PREMIUM_REPORTS_PATH$year\\$monthName.xlsx").exists()) {
 
                         var report = Report()
 
@@ -102,7 +109,7 @@ fun Route.reportRoute() {
             }
             else {
                 //если отчёт есть
-                if (File("$PREMIUM_REPORTS_PATH$monthName.xlsx").exists()) {
+                if (File("$PREMIUM_REPORTS_PATH$year\\$monthName.xlsx").exists()) {
 
                     var report = Report()
 
