@@ -60,22 +60,22 @@ fun Application.module() {
         SchemaUtils.create(ReportMonthData)
         SchemaUtils.create(ReportTeachers)
 
-        Month.selectAll().forEach { monthIT ->
-            ReportMonthData.insert { repIT ->
-                repIT[monthName] = monthIT[Month.monthName]
-            }
-        }
-
-        Month.selectAll().forEach { monthIT ->
-            User.selectAll().forEach { userIT ->
-                if (userIT[User.statusId] == 4) {
-                    ReportTeachers.insert {
-                        it[monthName] = monthIT[Month.monthName]
-                        it[userName] = userIT[User.name]
-                    }
-                }
-            }
-        }
+//        Month.selectAll().forEach { monthIT ->
+//            ReportMonthData.insert { repIT ->
+//                repIT[monthName] = monthIT[Month.monthName]
+//            }
+//        }
+//
+//        Month.selectAll().forEach { monthIT ->
+//            User.selectAll().forEach { userIT ->
+//                if (userIT[User.statusId] == 4) {
+//                    ReportTeachers.insert {
+//                        it[monthName] = monthIT[Month.monthName]
+//                        it[userName] = userIT[User.name]
+//                    }
+//                }
+//            }
+//        }
 
         // заполнение таблицы со значениями оценок
 //        User.selectAll().forEach { userIT ->
