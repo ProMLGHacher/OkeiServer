@@ -40,14 +40,14 @@ fun startMonthTimer() {
     val dateFormatter: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     val monthDate: Date = dateFormatter.parse(getMonthRefreshDate())
     val monthTimer = Timer()
-    monthTimer.schedule(YearTimer(), monthDate)
+    monthTimer.schedule(MonthTimer(), monthDate)
 }
 
 fun startYrTimer() {
     val dateFormatter: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     val yrDate: Date = dateFormatter.parse(getYrRefreshDate())
     val yrTimer = Timer()
-    yrTimer.schedule(MonthTimer(), yrDate)
+    yrTimer.schedule(YearTimer(), yrDate)
 }
 
 class YearTimer : TimerTask() {
