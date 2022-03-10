@@ -5,6 +5,12 @@ import io.ktor.auth.*
 import io.ktor.http.content.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
+import ru.krea.database.*
 import ru.krea.global.PREMIUM_REPORTS_PATH
 import ru.krea.routes.admin_panel.reportRoute
 import ru.krea.routes.months.monthsRoute
@@ -39,4 +45,61 @@ fun Application.configureRouting() {
             }
         }
     }
+
+    routing {
+        route("delete") {
+            get("/{login}") {
+                val userLogin = call.parameters["login"].toString()
+
+                transaction {
+                    Marks.deleteWhere { Marks.userLogin eq userLogin }
+                    UserLastChange.deleteWhere { UserLastChange.userLogin eq userLogin }
+                    User.deleteWhere { User.login eq userLogin }
+                }
+
+            }
+        }
+
+        route("add") {
+            get("/{login}/{password}/{name}/{statusID}") {
+                val userLogin = call.parameters["login"].toString()
+                val password = call.parameters["password"].toString()
+                val name = call.parameters["name"].toString()
+                val statusID = call.parameters["statusID"]!!.toInt()
+
+                transaction {
+                    User.insert {
+                        it[login] = login
+                        it[User.name] = name
+                        it[statusId] = statusID
+                        it[User.password] = password
+                        it[lastChange] = "нет изменений"
+                    }
+                    Criterion.selectAll().forEach { criterionIT ->
+                        Month.selectAll().forEach { monthIT ->
+                            Marks.insert {
+                                it[mark] = 0
+                                it[Marks.userLogin] = userLogin
+                                it[markId] = criterionIT[Criterion.criterionId]
+                                it[monthName] = monthIT[Month.monthName]
+                                it[lastChange] = "нет изменений"
+                                it[lastAppraiser] = "пока никто не оценил"
+                            }
+                        }
+                    }
+
+                    Month.selectAll().forEach { monthIT ->
+                        UserLastChange.insert {
+                            it[lastChange] = "нет изменений"
+                            it[UserLastChange.userLogin] = userLogin
+                            it[monthName] = monthIT[Month.monthName]
+                        }
+                    }
+
+                }
+
+            }
+        }
+    }
+
 }
