@@ -127,7 +127,7 @@ fun Route.reportRoute() {
                             report.pointValue = it[ReportMonthData.pointValue]
                             report.urlExcel = it[ReportMonthData.urlAccount]
                         }
-                        ReportTeachers.select { ReportTeachers.monthName.eq(monthName) and ReportTeachers.userName.eq(username) }.forEach {
+                        ReportTeachers.select { ReportTeachers.monthName.eq(monthName) }.forEach {
                             listPremiumTeacher += PremiumTeacher(it[ReportTeachers.userName], it[ReportTeachers.countPoints], it[ReportTeachers.premium])
                         }
                     }
@@ -196,7 +196,7 @@ fun Route.reportRoute() {
                     }
                 }.write("$PREMIUM_REPORTS_PATH$year\\$monthName.xlsx")
 
-                report.urlExcel = "$PREMIUM_REPORTS_LINK$year\\$monthName.xlsx"
+                report.urlExcel = "$PREMIUM_REPORTS_LINK$year/$monthName.xlsx"
 
                 ReportMonthData.update({ReportMonthData.monthName.eq(monthName)}) {
                     it[ReportMonthData.urlAccount] = report.urlExcel

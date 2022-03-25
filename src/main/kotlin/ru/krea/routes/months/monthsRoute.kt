@@ -18,9 +18,12 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.floor
 
+var iii = 0
+
 fun Route.monthsRoute() {
     route("months") {
         get {
+
 
             val previousMonth = MonthData()
             val currentMonth = MonthData()
@@ -103,6 +106,8 @@ fun Route.monthsRoute() {
                     }
                 }
             }
+
+            println(iii++)
             call.respond(listOf(currentMonth, previousMonth))
         }
 

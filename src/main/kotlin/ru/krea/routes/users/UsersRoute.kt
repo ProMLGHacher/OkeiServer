@@ -32,9 +32,9 @@ fun Route.usersRoute() {
                             }
                             if (currentUserMarkSumm > previousUserMarkSumm) {
                                 topTeacher = userIT[User.login]
+                                previousUserMarkSumm = currentUserMarkSumm
                             }
                         }
-                        previousUserMarkSumm = currentUserMarkSumm
                     }
                 }
 

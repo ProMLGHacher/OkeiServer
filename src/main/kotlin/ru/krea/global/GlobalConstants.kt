@@ -11,8 +11,8 @@ import java.io.FileReader
 const val IMAGES_LINK = "http://176.28.64.201:3434/images/"
 const val PREMIUM_REPORTS_LINK = "http://176.28.64.201:3434/reports/"
 
-const val PREMIUM_REPORTS_PATH = ""
-const val PREMIUM_LOGS_PATH = ""
+const val PREMIUM_REPORTS_PATH = "C:\\Users\\SU\\Desktop\\reports\\rep\\"
+const val PREMIUM_LOGS_PATH = "C:\\Users\\SU\\Desktop\\reports\\logs\\"
 
 const val MAX_MARK_VALUE_FOR_TEACHER = 54
 

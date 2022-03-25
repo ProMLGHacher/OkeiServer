@@ -19,10 +19,10 @@ import ru.krea.routes.users.usersRoute
 fun Application.configureRouting() {
     routing {
         authenticate("auth-jwt") {
-            monthsRoute()
             usersRoute()
             reportRoute()
         }
+        monthsRoute()
     }
 
     // Starting point for a Ktor app:
@@ -32,7 +32,7 @@ fun Application.configureRouting() {
         }
     }
 
-    //фотки будут тут браться
+    //фотки будут тут драться
     routing {
         route("/images") {
             static("/") {
@@ -56,6 +56,8 @@ fun Application.configureRouting() {
                     UserLastChange.deleteWhere { UserLastChange.userLogin eq userLogin }
                     User.deleteWhere { User.login eq userLogin }
                 }
+
+                call.respond("ok")
 
             }
         }
@@ -97,6 +99,8 @@ fun Application.configureRouting() {
                     }
 
                 }
+
+                call.respond("ok")
 
             }
         }
