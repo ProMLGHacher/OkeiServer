@@ -133,6 +133,14 @@ fun Application.module() {
         }
     }
 
+
+
+    routing {
+        get {
+            call.respond("Работает =)")
+        }
+    }
+
     routing {
         post("/login") {
             val user = call.receive<UserAuthData>()
@@ -177,3 +185,40 @@ fun Application.module() {
 
 }
 
+
+
+fun remo() {
+    transaction {
+        Marks.update {
+            it[mark] = 0
+            it[lastChange] = "нет изменений"
+            it[lastAppraiser] = "пока никто не оценил"
+        }
+        Month.update {
+            it[lastChange] = "нет"
+        }
+        User.update {
+            it[lastChange] = "нет изменений"
+        }
+        UserLastChange.update {
+            it[lastChange] = "нет изменений"
+        }
+        ReportMonthData.deleteAll()
+        Month.selectAll().forEach { monthIT ->
+            ReportMonthData.insert { repIT ->
+                repIT[monthName] = monthIT[Month.monthName]
+            }
+        }
+        ReportTeachers.deleteAll()
+        Month.selectAll().forEach { monthIT ->
+            User.selectAll().forEach { userIT ->
+                if (userIT[User.statusId] == 4) {
+                    ReportTeachers.insert {
+                        it[monthName] = monthIT[Month.monthName]
+                        it[userName] = userIT[User.name]
+                    }
+                }
+            }
+        }
+    }
+}

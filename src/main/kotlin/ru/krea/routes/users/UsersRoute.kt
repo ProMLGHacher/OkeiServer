@@ -19,7 +19,6 @@ fun Route.usersRoute() {
             val monthName = call.parameters["monthName"].toString()
 
             transaction {
-
                 var topTeacher = ""
 
                 var previousUserMarkSumm = 0

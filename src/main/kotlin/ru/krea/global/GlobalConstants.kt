@@ -9,7 +9,7 @@ import java.io.FileReader
 
 
 const val IMAGES_LINK = "http://176.28.64.201:3434/images/"
-const val PREMIUM_REPORTS_LINK = "http://176.28.64.201:3434/reports/"
+const val PREMIUM_REPORTS_LINK = "http://192.168.101.25:3434/reports/stat/"
 
 const val PREMIUM_REPORTS_PATH = "C:\\Users\\SU\\Desktop\\reports\\rep\\"
 const val PREMIUM_LOGS_PATH = "C:\\Users\\SU\\Desktop\\reports\\logs\\"

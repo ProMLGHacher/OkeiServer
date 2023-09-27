@@ -9,11 +9,8 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import ru.krea.database.Marks
 import ru.krea.database.ReportMonthData
 import ru.krea.database.ReportTeachers
@@ -42,7 +39,7 @@ fun Route.reportRoute() {
 
             val monthName = call.parameters["month"].toString()
 
-            if (monthName in listOf("Сентябрь", "Октябрь", "Ноябрь", "Декабрь")) {
+            if (monthName in listOf("Сентябрь", "Октябрь", "Ноябрь", "Декабрь") && currentMonth !in listOf("Сентябрь", "Октябрь", "Ноябрь", "Декабрь")) {
                 year -= 1
             }
 
@@ -178,6 +175,19 @@ fun Route.reportRoute() {
                 report.listPremiumTeacher = listPremiumTeacher.toList()
 
                 report.listPremiumTeacher.forEach { teacher ->
+                    val size = ReportTeachers.select {
+                        ReportTeachers.userName.eq(
+                            teacher.name
+                        )
+                    }.count()
+                    if (size < 1) {
+                        MONTHS_NAMES.forEach { monthNameIT ->
+                            ReportTeachers.insert {
+                                it[ReportTeachers.monthName] = monthNameIT
+                                it[ReportTeachers.userName] = userName
+                            }
+                        }
+                    }
                     ReportTeachers.update({ReportTeachers.monthName.eq(monthName) and ReportTeachers.userName.eq(teacher.name)}) {
                         it[countPoints] = teacher.countPoints
                         it[premium] = teacher.premium

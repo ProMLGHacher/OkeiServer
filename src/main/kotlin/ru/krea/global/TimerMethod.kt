@@ -59,6 +59,7 @@ class YearTimer : TimerTask() {
             Marks.update {
                 it[mark] = 0
                 it[lastChange] = "нет изменений"
+                it[lastAppraiser] = "пока никто не оценил"
             }
             Month.update {
                 it[lastChange] = "нет"

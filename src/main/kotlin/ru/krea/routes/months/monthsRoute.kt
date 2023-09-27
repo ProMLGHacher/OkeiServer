@@ -141,7 +141,7 @@ fun Route.monthsRoute() {
             val now = Calendar.getInstance()!!
             val day = now.get(Calendar.DAY_OF_MONTH)
 
-            if (day > 25) {
+            if (day > 27) {
                 call.respondText("MethodNotAllowed", status = HttpStatusCode.MethodNotAllowed)
             } else {
                 val monthName = call.parameters["monthName"].toString()

@@ -8,3 +8,4 @@ data class PremiumTeacher(
     val countPoints: String,// 56
     val premium: String//5 6311
 )
+
